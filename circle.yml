@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - sudo pip install 'docker-compose<1.3' 'requests==2.5.3'
+    - docker login --email $DOCKER_EMAIL --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+    - docker-compose build
+    - docker-compose up -d postgres && sleep 3;
+test:
+  override:
+    - docker-compose run webapp npm test
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - ./push_to_docker.sh
